@@ -1,0 +1,127 @@
+opt_out_usage
+
+# vim:syntax=ruby:et:sts=2:sw=2:ts=2:ff=unix:
+
+default_platform :ios
+
+platform :ios do
+  before_all do
+    get_changelog_from_git
+    get_version_from_date
+    xcversion(version: ">= 8.0")
+  end
+
+  desc "Run unit tests"
+  lane :shared_tests do |options|
+    cocoapods(repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+
+    scan(
+      clean: true,
+      skip_build: true,
+      output_directory: './artifacts/unit-tests',
+      scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
+      device: ENV['REM_FL_TESTS_DEVICE'] || 'REM SDK Unit Tests',
+      code_coverage: true)
+
+    slather(
+      output_directory: './artifacts/coverage',
+      scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
+      cobertura_xml: true,
+      proj: ENV['REM_FL_TESTS_PROJECT'],
+      workspace: ENV['REM_FL_TESTS_WORKSPACE'],
+      binary_basename: ENV['REM_FL_TESTS_SLATHER_BASENAME'],
+      ignore: '../*')
+  end
+
+  desc "Build a sample"
+  lane :shared_sample do |options|
+
+    # Increment version
+    increment_build_number(build_number: lane_context[SharedValues::R_VERSION_FROM_DATE], xcodeproj: ENV['REM_FL_SAMPLE_PROJECT'])
+    increment_version_number(version_number: lane_context[SharedValues::R_VERSION_FROM_DATE], xcodeproj: ENV['REM_FL_SAMPLE_PROJECT'])
+
+    # Install pods
+    cocoapods(podfile: ENV['REM_FL_SAMPLE_PODFILE'] || 'Samples/Podfile', repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+
+    # Build sample
+    gym(
+      configuration: "Release",
+      output_directory: './artifacts/device',
+      workspace: ENV['REM_FL_SAMPLE_WORKSPACE'],
+      codesigning_identity: 'iPhone Distribution',
+      export_method: 'enterprise',
+      export_team_id: ENV['REM_FL_EXPORT_TEAM_ID'],
+      export_options: {
+        uploadBitcode: false,
+        compileBitcode: false,
+      },
+      scheme: ENV['REM_FL_SAMPLE_SCHEME'])
+  end
+
+  desc "Build everything"
+  lane :shared_ci do |options|
+    ENV['FL_COCOAPODS_VERBOSE'] = "1"
+
+    shared_tests(options)
+    shared_sample(options)
+  end
+
+  desc 'Module Pre-Release checks'
+  lane :release do |options|
+
+    release_tag = version_get_podspec(path: ENV['REM_FL_PODSPEC_FILE'])
+    module_name = options[:module]
+    release_branch = options[:branch]
+
+    # Remove the newline character from the release_tag otherwise it won't enter into if statement
+    release_tag = release_tag.to_s.strip
+
+    unless release_tag.empty?
+      if !git_tag_exists(tag: "#{release_tag}")
+        puts "#{release_tag} version doesn't exist, it will be tagged to master branch and push it to the remote. After the version is tagged, run 'release' lane again"
+
+      ensure_git_branch(
+          branch: "#{release_branch}"
+      )
+
+      add_git_tag(
+         tag: "#{release_tag}"
+      )
+      sh "git push origin #{release_tag}"
+
+      end
+    end
+
+    sh 'launchctl remove com.apple.CoreSimulator.CoreSimulatorService || true'
+    stg_lint
+
+    puts "generate documenation for #{module_name} version #{release_tag}"
+    documentation(
+      module_name: module_name,
+      module_version: release_tag
+    )
+  end
+
+  private_lane :lint do |options|
+    pod_lib_lint(sources: [options[:source], "https://github.com/CocoaPods/Specs"], allow_warnings: true, verbose: false)
+  end
+
+  desc 'Lint the podspec on STG spec repo'
+  lane :stg_lint do
+    lint(source: ENV['REM_FL_STG_SPEC_REPO'])
+  end
+
+  desc 'Lint the podspec on PROD spec repo'
+  lane :prd_lint do
+    lint(source: ENV['REM_FL_SPEC_REPO'])
+  end
+
+  desc "Generate Doxygen documentation for module using red-gendoc script"
+  lane :generate_doxygen do |options|
+    documentation(
+      module_name: options[:module_name],
+      module_version: options[:module_version]
+    )
+  end
+end
+# vim:syntax=ruby:et:sts=2:sw=2:ts=2:ff=unix:
