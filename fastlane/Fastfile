@@ -123,5 +123,26 @@ platform :ios do
       module_version: options[:module_version]
     )
   end
+
+  desc "OCLint reporter (type: pmd)"
+    lane:oclint_report do
+      # Execute xcodebuild to have a report of all source files
+      xcodebuild(
+        scheme: "CI",
+        workspace: "#{ENV["REM_FL_TESTS_WORKSPACE"]}",
+        xcargs: "-sdk iphonesimulator | xcpretty -r json-compilation-database -o ./artifacts/oclint/compile_commands.json"
+      )
+
+      # Execute OCLint
+      oclint(
+        compile_commands: "./artifacts/oclint/compile_commands.json",   # The JSON compilation database, use xctool reporter "json-compilation-database"
+        report_type: "pmd",                                             # Report type (pmd/html). Keep PMD format for Jenkins PMD report plugin
+        report_path: "./artifacts/oclint/oclint_report.xml",            # Report path. Put it on Jenins after build script
+        select_regex: /^((?!Pods)[\s\S])*$/,                            # Exclue 'Pods' sources files
+        max_priority_1: 10,                                             # The max allowed number of priority 1 violations
+        max_priority_2: 2000,                                           # The max allowed number of priority 2 violations
+        max_priority_3: 5000                                            # The max allowed number of priority 3 violations
+      )
+  end
 end
 # vim:syntax=ruby:et:sts=2:sw=2:ts=2:ff=unix:
