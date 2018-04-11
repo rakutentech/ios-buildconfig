@@ -62,6 +62,9 @@ platform :ios do
   lane :shared_ci do |options|
     ENV['FL_COCOAPODS_VERBOSE'] = "1"
 
+    # status on completion will be notified by Jenkins directly
+    notify_gitpub(status: "INPROGRESS")
+
     shared_tests(options)
     shared_sample(options)
   end
