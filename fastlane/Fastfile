@@ -126,5 +126,15 @@ platform :ios do
       module_version: options[:module_version]
     )
   end
+
+  desc "Set up project, including git hooks"
+  lane :setup_project do
+    setup_git_hooks
+  end
+
+  desc "Format Objective-C code using clang-format tool"
+  lane :format_objc do |options|
+    apply_codestyle(options[:ignore_exit_code])
+  end
 end
 # vim:syntax=ruby:et:sts=2:sw=2:ts=2:ff=unix:
