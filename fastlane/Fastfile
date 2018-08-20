@@ -8,7 +8,7 @@ platform :ios do
   before_all do
     get_changelog_from_git
     get_version_from_date
-    xcversion(version: ">= 8.0")
+    xcversion(version: ">= 9.0")
   end
 
   desc "Run unit tests"
@@ -21,7 +21,10 @@ platform :ios do
       output_directory: './artifacts/unit-tests',
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
       device: ENV['REM_FL_TESTS_DEVICE'] || 'REM SDK Unit Tests',
-      code_coverage: true)
+      code_coverage: true,
+      output_types: 'json-compilation-database,html,junit',
+      output_files: 'compile_commands.json,report.html,report.junit',
+      xcargs: 'COMPILER_INDEX_STORE_ENABLE=NO') # see https://github.com/oclint/oclint/issues/462
 
     slather(
       output_directory: './artifacts/coverage',
@@ -31,6 +34,8 @@ platform :ios do
       workspace: ENV['REM_FL_TESTS_WORKSPACE'],
       binary_basename: ENV['REM_FL_TESTS_SLATHER_BASENAME'],
       ignore: '../*')
+
+    lint_module
   end
 
   desc "Build a sample"
@@ -105,18 +110,44 @@ platform :ios do
     )
   end
 
-  private_lane :lint do |options|
+  private_lane :lint_podspec do |options|
     pod_lib_lint(sources: [options[:source], "https://github.com/CocoaPods/Specs"], allow_warnings: true, verbose: false)
   end
 
   desc 'Lint the podspec on STG spec repo'
   lane :stg_lint do
-    lint(source: ENV['REM_FL_STG_SPEC_REPO'])
+    lint_podspec(source: ENV['REM_FL_STG_SPEC_REPO'])
   end
 
   desc 'Lint the podspec on PROD spec repo'
   lane :prd_lint do
-    lint(source: ENV['REM_FL_SPEC_REPO'])
+    lint_podspec(source: ENV['REM_FL_SPEC_REPO'])
+  end
+
+  lane :lint_module do
+    if is_ci?
+      type = 'pmd'
+      path = './artifacts/lint-results.xml'
+    else
+      type = 'html'
+      path = './artifacts/lint-results.html'
+    end
+
+    module_name = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
+
+    begin
+      oclint(
+        compile_commands: './artifacts/unit-tests/compile_commands.json',
+        select_regex: module_name + '/',
+        report_type: type,
+        report_path: path,
+        max_priority_1: 10,
+        max_priority_2: 50,
+        max_priority_3: 100,
+        disable_rules: ['LongLine'])
+    rescue
+      UI.error '`oclint` found a problem. Please check ' + path
+    end
   end
 
   desc "Generate Doxygen documentation for module using red-gendoc script"
