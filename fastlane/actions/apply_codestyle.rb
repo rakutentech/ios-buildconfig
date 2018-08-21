@@ -4,14 +4,23 @@ module Fastlane
   module Actions
     class ApplyCodestyleAction < Action
       def self.run(params)
-        UI.message("Format Objective-C code files in-place with clang-format tool")
+        UI.message("Format Objective-C code files with clang-format tool")
 
         begin
           # download latest clang-format config
           sh("curl -s -o .clang-format https://raw.githubusercontent.com/rakutentech/ios-buildconfig/master/.clang-format")
 
-          # format Objective-C files in-place
-          sh("find . -iname *.h -o -iname *.m | xargs clang-format -style=file -fallback-style=none -i")
+          folder = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
+          format_command = "find #{folder}/ -iname *.h -o -iname *.m | xargs clang-format -style=file -fallback-style=none"
+
+          if (params[:check_only] == true)
+            output_path = 'artifacts/clang-format-report.txt'
+            UI.message("Running checks only, outputting results to #{output_path}")
+            sh(format_command + " > #{output_path}")
+          else
+            UI.message("Formatting files in-place")
+            sh(format_command + " -i")
+          end
         rescue
           handle_format_error(params[:ignore_exit_status], $?.exitstatus)
         end
@@ -19,6 +28,23 @@ module Fastlane
 
       def self.description
         "Format Objective-C code files in-place with clang-format tool"
+      end
+
+      def self.available_options
+        [
+          FastlaneCore::ConfigItem.new(key: :ignore_exit_status,
+                                       description: " when error occurs ignore exit status and continue",
+                                       optional: true,
+                                       default_value: true,
+                                       is_string: false
+                                       ),
+          FastlaneCore::ConfigItem.new(key: :check_only,
+                                       description: "do not format source files in-place, store the check result in artifacts/clang-format-report.txt",
+                                       optional: true,
+                                       default_value: false,
+                                       is_string: false
+                                       )
+        ]
       end
 
       def self.output
