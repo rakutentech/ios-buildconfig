@@ -36,6 +36,7 @@ platform :ios do
       ignore: '../*')
 
     lint_module
+    format_objc(check_only: true)
   end
 
   desc "Build a sample"
@@ -165,7 +166,7 @@ platform :ios do
 
   desc "Format Objective-C code using clang-format tool"
   lane :format_objc do |options|
-    apply_codestyle(options[:ignore_exit_code])
+    apply_codestyle(options)
   end
 end
 # vim:syntax=ruby:et:sts=2:sw=2:ts=2:ff=unix:
