@@ -128,12 +128,13 @@ platform :ios do
   lane :lint_module do
     if is_ci?
       type = 'pmd'
-      path = './artifacts/lint-results.xml'
+      ocpath = './artifacts/lint-results.xml'
     else
       type = 'html'
-      path = './artifacts/lint-results.html'
+      ocpath = './artifacts/lint-results.html'
     end
 
+    swiftpath = './swiftlint.result.json'
     module_name = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
 
     begin
@@ -141,14 +142,31 @@ platform :ios do
         compile_commands: './artifacts/unit-tests/compile_commands.json',
         select_regex: module_name + '/',
         report_type: type,
-        report_path: path,
+        report_path: ocpath,
         max_priority_1: 10,
         max_priority_2: 50,
         max_priority_3: 100,
         disable_rules: ['LongLine'])
     rescue
-      UI.error '`oclint` found a problem. Please check ' + path
+      UI.error '`oclint` found a problem. Please check ' + ocpath
     end
+
+    if File.exist?('.swiftlint.yml')
+      begin
+        swiftlint(
+          mode: :lint,
+          strict: true,
+          output_file: swiftpath,
+          config_file: '.swiftlint.yml',
+          ignore_exit_status: false)
+      rescue
+        UI.error '`swiftlint` found a problem. Please check ' + swiftpath
+        raise
+      end
+    else
+      UI.important 'No `.swiftlint.yml` file found. Skipping SwiftLint step'
+    end
+    
   end
 
   desc "Generate Doxygen documentation for module using red-gendoc script"
