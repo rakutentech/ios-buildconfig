@@ -126,6 +126,8 @@ platform :ios do
   end
 
   lane :lint_module do
+  	check_artifacts_dir
+
     if is_ci?
       type = 'pmd'
       ocpath = './artifacts/lint-results.xml'
@@ -134,7 +136,7 @@ platform :ios do
       ocpath = './artifacts/lint-results.html'
     end
 
-    swiftpath = './swiftlint.result.json'
+    swiftpath = './artifacts/swiftlint.result.json'
     module_name = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
 
     begin
@@ -151,7 +153,7 @@ platform :ios do
       UI.error '`oclint` found a problem. Please check ' + ocpath
     end
 
-    if File.exist?('.swiftlint.yml')
+    if File.exist?('../.swiftlint.yml')
       begin
         swiftlint(
           mode: :lint,
@@ -185,6 +187,10 @@ platform :ios do
   desc "Format Objective-C code using clang-format tool"
   lane :format_objc do |options|
     apply_codestyle(options)
+  end
+
+  def check_artifacts_dir
+    Dir.mkdir '../artifacts' unless File.directory?('../artifacts')
   end
 end
 # vim:syntax=ruby:et:sts=2:sw=2:ts=2:ff=unix:
