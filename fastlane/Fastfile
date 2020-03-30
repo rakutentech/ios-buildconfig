@@ -20,7 +20,7 @@ platform :ios do
       skip_build: true,
       output_directory: './artifacts/unit-tests',
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
-      device: ENV['REM_FL_TESTS_DEVICE'] || 'REM SDK Unit Tests',
+      device: ENV['REM_FL_TESTS_DEVICE'] || 'iPhone 8',
       code_coverage: true,
       output_types: 'json-compilation-database,html,junit',
       output_files: 'compile_commands.json,report.html,report.junit',
@@ -67,10 +67,6 @@ platform :ios do
   desc "Build everything"
   lane :shared_ci do |options|
     ENV['FL_COCOAPODS_VERBOSE'] = "1"
-
-    # status on completion will be notified by Jenkins directly
-    notify_gitpub(status: "INPROGRESS")
-
     shared_tests(options)
     shared_sample(options)
   end
