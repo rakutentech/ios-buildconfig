@@ -12,7 +12,7 @@ def call(body = {}) {
 
         stage('Build then test') {
           runSteps(pipelineParams.preBuildSteps)
-          sh 'bundle install'
+          sh 'bundle install --path vendor/bundle'
           sh 'bundle exec fastlane ci'
         }
 
