@@ -22,6 +22,7 @@ platform :ios do
       device: ENV['REM_FL_TESTS_DEVICE'] || 'iPhone 11',
       code_coverage: true,
       slack_only_on_failure: true,
+      skip_slack: !ENV['BUILD_STATUS_CHANGED'] || true, # var defined in Bitrise step
       output_types: 'json-compilation-database,html,junit',
       output_files: 'compile_commands.json,report.html,report.junit',
       xcargs: 'COMPILER_INDEX_STORE_ENABLE=NO') # see https://github.com/oclint/oclint/issues/462
