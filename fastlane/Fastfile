@@ -133,7 +133,6 @@ platform :ios do
       ocpath = './artifacts/lint-results.html'
     end
 
-    swiftpath = './artifacts/swiftlint.result.json'
     module_name = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
 
     begin
@@ -155,11 +154,10 @@ platform :ios do
         swiftlint(
           mode: :lint,
           strict: true,
-          output_file: swiftpath,
           config_file: '.swiftlint.yml',
           ignore_exit_status: false)
       rescue
-        UI.error '`swiftlint` found a problem. Please check ' + swiftpath
+        UI.error '`swiftlint` found a problem. Please check the logs above'
         raise
       end
     else
