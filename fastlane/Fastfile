@@ -174,6 +174,15 @@ platform :ios do
     )
   end
 
+  desc "Generate Jazzy documentation for module and deploy to GitHub Pages"
+  lane :deploy_ghpages do |options|
+    check_artifacts_dir
+    gh_pages(
+      ghpages_url: options[:ghpages_url],
+      github_token: options[:github_token]
+    )
+  end
+
   desc "Set up project, including git hooks"
   lane :setup_project do
     setup_git_hooks
