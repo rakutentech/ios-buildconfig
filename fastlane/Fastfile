@@ -166,8 +166,8 @@ platform :ios do
     
   end
 
-  desc "Generate Doxygen documentation for module using red-gendoc script"
-  lane :generate_doxygen do |options|
+  desc "Generate documentation for module"
+  lane :generate_docs do |options|
     documentation(
       module_name: options[:module_name],
       module_version: options[:module_version]

@@ -18,14 +18,15 @@ module Fastlane
         Dir.chdir(ENV['WORKSPACE']) do
           FileUtils.mkdir_p('artifacts/docs')
           FileUtils.remove_dir 'artifacts/Documentation', :force => true
-          sh("red-gendoc")
+          doc_script = ENV.fetch("REM_FL_DOCS_GENERATION_COMMAND", "red-gendoc")
+          sh(doc_script)
           FileUtils.mv 'documentation', "artifacts/docs/#{doc_dir}", :force => true
         end
 
       end
 
       def self.description
-        "Generate documentation for sdk module"
+        "Generate documentation for sdk module using red-gendoc script or command defined in REM_FL_DOCS_GENERATION_COMMAND env variable"
       end
 
       def self.available_options
