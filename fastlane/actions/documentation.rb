@@ -15,7 +15,9 @@ module Fastlane
         doc_dir = module_name + "-" + short_version
         UI.message("documentation directory name: #{doc_dir}")
 
-        Dir.chdir(ENV['WORKSPACE']) do
+        workspace = ENV['WORKSPACE'] || "./"
+
+        Dir.chdir(workspace) do
           FileUtils.mkdir_p('artifacts/docs')
           FileUtils.remove_dir 'artifacts/Documentation', :force => true
           doc_script = ENV.fetch("REM_FL_DOCS_GENERATION_COMMAND", "red-gendoc")
