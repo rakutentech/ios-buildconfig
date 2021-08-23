@@ -1,0 +1,16 @@
+key.request: source.request.editor.open.interface
+key.name: "5F63C5B8-6D92-44FF-8012-DCA7D787D243"
+key.compilerargs:
+  - "-target"
+  - "{{TARGET_NAME}}"
+  - "-sdk"
+  - "{{SDK_DIR}}"
+  - "-I"
+  - "{{MODULE_DIR}}"
+  - "-F"
+  - "{{MODULE_DIR}}"
+  - ""
+key.modulename: "{{MODULE_NAME}}"
+key.toolchains:
+  - "com.apple.dt.toolchain.XcodeDefault"
+key.synthesizedextensions: 1
