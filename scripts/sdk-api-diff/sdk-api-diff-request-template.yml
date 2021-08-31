@@ -1,5 +1,5 @@
 key.request: source.request.editor.open.interface
-key.name: "5F63C5B8-6D92-44FF-8012-DCA7D787D243"
+key.name: "{{SOURCEKITTEN_REQUEST_NAME}}"
 key.compilerargs:
   - "-target"
   - "{{TARGET_NAME}}"
