@@ -28,6 +28,10 @@ sh ~/sdk-api-diff.sh RInAppMessaging \
 ~/Library/Developer/Xcode/DerivedData/RInAppMessaging-1.0/Build/Products/Debug-iphonesimulator/RInAppMessaging \
 ~/Library/Developer/Xcode/DerivedData/RInAppMessaging-2.0/Build/Products/Debug-iphonesimulator/RInAppMessaging
 ```
+**Hint:** To get .framework path, build you project and navigate to Products catalogue in the navigator.
+Then either left-click on your .framework reference and copy the path from the File Inspector on the right, or right-click -> Show in Finder, right click on the .framework and select Copy ".framework" as Pathname with option button pressed.
+
+The path should be a directory containing .framework file, not a direct path to .framework file.
 
 #### Swift Package module
 ```bash
