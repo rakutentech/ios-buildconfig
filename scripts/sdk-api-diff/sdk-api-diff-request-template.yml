@@ -1,0 +1,16 @@
+key.request: source.request.editor.open.interface
+key.name: "{{SOURCEKITTEN_REQUEST_NAME}}"
+key.compilerargs:
+  - "-target"
+  - "{{TARGET_NAME}}"
+  - "-sdk"
+  - "{{SDK_DIR}}"
+  - "-I"
+  - "{{MODULE_DIR}}"
+  - "-F"
+  - "{{MODULE_DIR}}"
+  - ""
+key.modulename: "{{MODULE_NAME}}"
+key.toolchains:
+  - "com.apple.dt.toolchain.XcodeDefault"
+key.synthesizedextensions: 1
