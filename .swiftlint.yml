@@ -2,6 +2,12 @@ opt_in_rules:
 - empty_count
 - empty_string
 
+disabled_rules:
+- nesting
+- identifier_name
+- todo
+- cyclomatic_complexity
+
 excluded:
 - Carthage
 - Pods
