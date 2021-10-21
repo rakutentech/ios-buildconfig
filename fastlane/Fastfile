@@ -17,6 +17,7 @@ platform :ios do
     scan(
       clean: true,
       skip_build: true,
+      result_bundle: true,
       output_directory: './artifacts/unit-tests',
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
       device: ENV['REM_FL_TESTS_DEVICE'] || 'iPhone 11',
