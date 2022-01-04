@@ -14,9 +14,6 @@ module Fastlane
         UI.user_error!("Missing `_versions` file") unless File.exists?("_versions")
         UI.user_error!("Missing `.jazzy.yaml` file") unless File.exists?(".jazzy.yaml")
         module_version = YAML.load(File.read(".jazzy.yaml"))["module_version"]
-        array = module_version.split(/[.]/)
-        short_version = array[0] + "." + array[1]
-        module_version = short_version
         UI.user_error!("Missing `module_version` parameter in .jazzy.yaml file") unless module_version != nil
         module_name = YAML.load(File.read(".jazzy.yaml"))["module"]
         UI.user_error!("Missing `module` parameter in .jazzy.yaml file") unless module_name != nil
@@ -36,7 +33,7 @@ module Fastlane
         versions_string = File.readlines("_versions").map{|line| "\"#{line.strip}\""}.join(",")
         versions_js = "const Versions = [" + versions_string + "];"
         File.open("#{docs_folder}/versions.js", "w") { |f| f.write versions_js }
-        File.open("#{docs_folder}/index.html", "w") { |f| f.write "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=#{module_name}-#{module_version}/index.html\" /></head></html>" }
+        File.open("#{docs_folder}/index.html", "w") { |f| f.write "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=#{module_version}/index.html\" /></head></html>" }
 
         UI.message("Deploying documentation")
         # Deploy to GitHub Pages
