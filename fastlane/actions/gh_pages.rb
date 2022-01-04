@@ -27,7 +27,7 @@ module Fastlane
         # Download theme and generate docs
         UI.user_error!("svn not installed") unless system("command -v svn")
         sh "svn export https://github.com/rakutentech/ios-buildconfig/trunk/jazzy_themes jazzy_themes --force"
-        other_action.documentation(module_name: module_name, module_version: module_version)
+        sh "bundle exec jazzy --output artifacts/docs/#{module_version} --theme jazzy_themes/apple_versions"
 
         # Generate html files
         versions_string = File.readlines("_versions").map{|line| "\"#{line.strip}\""}.join(",")
