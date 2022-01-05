@@ -99,6 +99,7 @@ if [ "$SPM_MODE" = false ] ; then
   set +e # diff exit code 1 means that differences were found.
   diff moduleA.swift moduleB.swift > $MODULE_NAME.diff
   set -e
+  echo "API diff generated to $(pwd)/$MODULE_NAME.diff"
 
   # Print API diff summary
   xcrun --toolchain swift swift-api-digester --dump-sdk -module $MODULE_NAME -I $MODULE_A_DIR -F $MODULE_A_DIR -sdk $SDK_DIR -o moduleA.json -target $TARGET_NAME
