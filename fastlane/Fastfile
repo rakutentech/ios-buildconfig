@@ -30,11 +30,12 @@ platform :ios do
     slather(
       output_directory: './artifacts/coverage',
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
-      cobertura_xml: true,
+      sonarqube_xml: true,
+      use_bundle_exec: true,
       proj: ENV['REM_FL_TESTS_PROJECT'],
       workspace: ENV['REM_FL_TESTS_WORKSPACE'],
       binary_basename: ENV['REM_FL_TESTS_SLATHER_BASENAME'],
-      ignore: '../*')
+      ignore: '*.{h,m}')
 
     lint_module
     format_objc(check_only: true)
