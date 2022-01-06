@@ -15,25 +15,29 @@ module Fastlane
         UI.user_error!("Missing `.jazzy.yaml` file") unless File.exists?(".jazzy.yaml")
         module_version = YAML.load(File.read(".jazzy.yaml"))["module_version"]
         UI.user_error!("Missing `module_version` parameter in .jazzy.yaml file") unless module_version != nil
+        module_name = YAML.load(File.read(".jazzy.yaml"))["module"]
+        UI.user_error!("Missing `module` parameter in .jazzy.yaml file") unless module_name != nil
+        docs_folder = "artifacts/docs"
 
         # Prepare environment
-        FileUtils.rm_rf("artifacts/docs")
-        sh "git clone --single-branch --branch gh-pages #{ghpages_url} artifacts/docs"
-        FileUtils.rm_rf("artifacts/docs/#{module_version}")
+        FileUtils.rm_rf(docs_folder)
+        sh "git clone --single-branch --branch gh-pages #{ghpages_url} #{docs_folder}"
+        FileUtils.rm_rf("#{docs_folder}/#{module_version}")
 
         # Download theme and generate docs
+        UI.user_error!("svn not installed") unless system("command -v svn")
         sh "svn export https://github.com/rakutentech/ios-buildconfig/trunk/jazzy_themes jazzy_themes --force"
         sh "bundle exec jazzy --output artifacts/docs/#{module_version} --theme jazzy_themes/apple_versions"
 
         # Generate html files
         versions_string = File.readlines("_versions").map{|line| "\"#{line.strip}\""}.join(",")
         versions_js = "const Versions = [" + versions_string + "];"
-        File.open("artifacts/docs/versions.js", "w") { |f| f.write versions_js }
-        File.open("artifacts/docs/index.html", "w") { |f| f.write "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=#{module_version}/index.html\" /></head></html>" }
+        File.open("#{docs_folder}/versions.js", "w") { |f| f.write versions_js }
+        File.open("#{docs_folder}/index.html", "w") { |f| f.write "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=#{module_version}/index.html\" /></head></html>" }
 
         UI.message("Deploying documentation")
         # Deploy to GitHub Pages
-        git_cmd_config = "--git-dir=artifacts/docs/.git --work-tree=artifacts/docs/"
+        git_cmd_config = "--git-dir=#{docs_folder}/.git --work-tree=#{docs_folder}/"
         sh "git #{git_cmd_config} add . -f"
         sh "git #{git_cmd_config} commit -m \"Deploy Jazzy docs for version #{module_version}\""
 
