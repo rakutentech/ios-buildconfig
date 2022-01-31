@@ -150,6 +150,17 @@ platform :ios do
       UI.error '`oclint` found a problem. Please check ' + ocpath
     end
 
+    if Dir.glob("../*.podspec").length > 0
+      begin
+        pod_lib_lint(allow_warnings: true)
+      rescue
+        UI.error '`pod lib lint` found a problem. Please check the logs above'
+        raise
+      end
+    else
+      UI.important 'No `.podspec` files found. Skipping Pod Lib Lint step'
+    end
+
     if File.exist?('../.swiftlint.yml')
       begin
         swiftlint(
