@@ -80,6 +80,9 @@ platform :ios do
     module_name = options[:module]
     release_branch = options[:branch]
 
+    sh 'launchctl remove com.apple.CoreSimulator.CoreSimulatorService || true'
+    stg_lint
+
     # Remove the newline character from the release_tag otherwise it won't enter into if statement
     release_tag = release_tag.to_s.strip
 
@@ -98,9 +101,6 @@ platform :ios do
 
       end
     end
-
-    sh 'launchctl remove com.apple.CoreSimulator.CoreSimulatorService || true'
-    stg_lint
 
     puts "generate documenation for #{module_name} version #{release_tag}"
     documentation(
