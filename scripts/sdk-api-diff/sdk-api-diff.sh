@@ -97,7 +97,7 @@ if [ "$SPM_MODE" = false ] ; then
 
   # Generate API diff
   set +e # diff exit code 1 means that differences were found.
-  diff moduleA.swift moduleB.swift > $MODULE_NAME.diff
+  diff -u moduleA.swift moduleB.swift > $MODULE_NAME.diff
   set -e
   echo "API diff generated to $(pwd)/$MODULE_NAME.diff"
 
@@ -128,7 +128,7 @@ else
 
   # Generate API diff
   set +e # diff exit code 1 means that differences were found.
-  diff "$MODULE_A_DIR/Documentation/$MODULE_NAME.swift" "$MODULE_B_DIR/Documentation/$MODULE_NAME.swift"  > $MODULE_NAME.diff
+  diff -u "$MODULE_A_DIR/Documentation/$MODULE_NAME.swift" "$MODULE_B_DIR/Documentation/$MODULE_NAME.swift" > $MODULE_NAME.diff
   set -e
 
   # Print API diff summary
