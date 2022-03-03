@@ -38,6 +38,7 @@ platform :ios do
       ignore: '*.{h,m}')
 
     lint_module
+    check_dependencies
     format_objc(check_only: true)
   end
 
@@ -184,6 +185,16 @@ platform :ios do
       UI.important 'No `.swiftlint.yml` file found. Skipping SwiftLint step'
     end
     
+  end
+
+  desc "Run OWASP Dependency Check"
+  lane :check_dependencies do |options|
+    dependency_check_ios_analyzer(
+      project_name: ENV['REM_FL_TESTS_SLATHER_BASENAME'] || 'Project',
+      output_types: 'html, json',
+      skip_spm_analysis: true,
+      output_directory: 'artifacts'
+    )
   end
 
   desc "Generate documentation for module"
