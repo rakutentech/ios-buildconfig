@@ -210,6 +210,7 @@ platform :ios do
     check_artifacts_dir
     gh_pages(
       ghpages_url: options[:ghpages_url],
+      deploy_key: options[:deploy_key],
       github_token: options[:github_token]
     )
   end
