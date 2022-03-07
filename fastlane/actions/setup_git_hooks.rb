@@ -4,21 +4,29 @@ module Fastlane
   module Actions
     class SetupGitHooksAction < Action
       def self.run(params)
-        UI.message("Set up git hooks: clang-format pre-commit hook")
+        UI.message "Setup git hook: [pre-commit] Detect hardcoded secrets using Gitleaks"
 
-        # download clang-format config
-        sh("curl -s -o .clang-format https://raw.githubusercontent.com/rakutentech/ios-buildconfig/master/.clang-format")
+        raise UI.user_error! "pre-commit git hook already exists" unless !File.file?('.git/hooks/pre-commit')
 
-        # download pre-commit hook and copy to .git/hooks/pre-commit
-        sh("curl -s -o pre-commit https://raw.githubusercontent.com/rakutentech/ios-buildconfig/master/scripts/check-files-clang")
-        sh("chmod +x pre-commit")
-        FileUtils.rm '.git/hooks/pre-commit', :force => true
+        begin
+          sh "command -v gitleaks"
+        rescue => ex
+          UI.user_error! "gitleaks not found (try running:  brew install gitleaks)"
+          raise
+        end
+
         FileUtils.mkdir_p('.git/hooks')
-        FileUtils.mv 'pre-commit', '.git/hooks/', :force => true
+        FileUtils.touch('.git/hooks/pre-commit')
+        precommitsh = <<~EOS
+          #!/bin/sh
+          gitleaks protect --verbose --redact --staged
+        EOS
+        File.write('.git/hooks/pre-commit', precommitsh)
+        FileUtils.chmod("+x", '.git/hooks/pre-commit')
       end
 
       def self.description
-        "Set up git hooks: clang-format pre-commit hook"
+        "Setup git hook(s)"
       end
 
       def self.output
