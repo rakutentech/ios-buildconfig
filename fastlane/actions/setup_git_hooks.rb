@@ -516,7 +516,7 @@ regexes = [
 description = "global allow lists"
 regexes = ['''219-09-9999''', '''078-05-1120''', '''(9[0-9]{2}|666)-\d{2}-\d{4}''']
 paths = [
-    '''Spec.swift''',
+    '''.*Spec.swift''',
     '''gitleaks.toml''',
     '''(.*?)(jpg|gif|doc|pdf|bin|svg|socket)$''',
     '''(go.mod|go.sum)$'''
