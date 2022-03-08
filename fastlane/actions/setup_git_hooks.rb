@@ -16,10 +16,16 @@ module Fastlane
         end
 
         FileUtils.mkdir_p('.git/hooks')
-        FileUtils.touch('.git/hooks/pre-commit')
+
+        # cp common .gitleaks.toml
+        buildconfig_root = File.expand_path('../..', __dir__)
+        gitleaks_config = File.read("#{buildconfig_root}/.gitleaks.toml")
+        File.write('.git/hooks/.gitleaks.toml', gitleaks_config)
+
+        # write git hook
         precommitsh = <<~EOS
           #!/bin/sh
-          gitleaks protect --verbose --redact --staged
+          gitleaks protect --verbose --redact --staged --config .git/hooks/.gitleaks.toml
         EOS
         File.write('.git/hooks/pre-commit', precommitsh)
         FileUtils.chmod("+x", '.git/hooks/pre-commit')
