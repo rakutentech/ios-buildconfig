@@ -1,5 +1,5 @@
 # https://github.com/zricethezav/gitleaks/blob/master/config/gitleaks.toml
-gitleaks_config = <<~EOS
+GITLEAKS_CONFIG = <<~EOS
 title = "gitleaks config"
 
 [[rules]]
@@ -543,7 +543,7 @@ module Fastlane
         FileUtils.mkdir_p('.git/hooks')
 
         # write .gitleaks.toml
-        File.write('.git/hooks/.gitleaks.toml', gitleaks_config)
+        File.write('.git/hooks/.gitleaks.toml', GITLEAKS_CONFIG)
 
         # write git hook
         precommitsh = <<~EOS
