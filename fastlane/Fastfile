@@ -38,8 +38,12 @@ platform :ios do
       ignore: '*.{h,m}')
 
     lint_module
-    check_dependencies
     format_objc(check_only: true)
+    begin
+      check_dependencies
+    rescue
+      UI.error 'Dependency check errored. Please check logs'
+    end
   end
 
   desc "Build a sample"
