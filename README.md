@@ -11,3 +11,9 @@ In your `Fastfile`, simply add the following line at the top:
 Run `fastlane lanes` for a description of the functionality available.
 
 
+### Setup Per-Repo Git Hooks
+
+To setup a git precommit hook to prevent accidental commits of sensitive passwords and secrets to your git repository:
+
+    brew install gitleaks
+    fastlane ios setup_project
