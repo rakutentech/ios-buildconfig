@@ -10,6 +10,7 @@ workflows:
     after_run:
     - _sonarqube
     - _report
+    - _deploy_artifacts
     steps:
     - fastlane@3:
         inputs:
@@ -22,6 +23,7 @@ workflows:
     - _setup
     after_run:
     - _deploy_docs_worker    
+    - _deploy_artifacts
     steps:
     - script@1:
         title: Lint and push Cocoapods trunk
@@ -51,6 +53,15 @@ workflows:
         inputs:
         - update_fastlane: 'false'
         - lane: deploy_ghpages ghpages_url:$GIT_REPOSITORY_URL github_token:$PUBLISHER_GITHUB_API_TOKEN
+
+  _deploy_artifacts:
+    steps:
+    - deploy-to-bitrise-io@2:
+        is_skippable: true
+        inputs:
+        - is_enable_public_page: "false"
+        - deploy_path: ./artifacts
+        - is_compress: "true"
 
   integration_tests:
     before_run:
