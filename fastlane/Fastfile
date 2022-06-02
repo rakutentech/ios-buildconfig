@@ -23,9 +23,8 @@ platform :ios do
       code_coverage: true,
       slack_only_on_failure: true,
       skip_slack: ENV['PREVIOUS_BUILD_STATUS'] == 'error', # var defined in Bitrise step
-      output_types: 'json-compilation-database,html,junit',
-      output_files: 'compile_commands.json,report.html,report.junit',
-      xcargs: 'COMPILER_INDEX_STORE_ENABLE=NO') # see https://github.com/oclint/oclint/issues/462
+      output_types: 'html,junit',
+      output_files: 'report.html,report.junit')
 
     slather(
       output_directory: './artifacts/coverage',
@@ -38,7 +37,6 @@ platform :ios do
       ignore: '*.{h,m}')
 
     lint_module
-    format_objc(check_only: true)
     begin
       check_dependencies
     rescue
@@ -149,20 +147,6 @@ platform :ios do
 
     module_name = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
 
-    begin
-      oclint(
-        compile_commands: './artifacts/unit-tests/compile_commands.json',
-        select_regex: module_name + '/',
-        report_type: type,
-        report_path: ocpath,
-        max_priority_1: 10,
-        max_priority_2: 50,
-        max_priority_3: 100,
-        disable_rules: ['LongLine'])
-    rescue
-      UI.error '`oclint` found a problem. Please check ' + ocpath
-    end
-
     if Dir.glob("../*.podspec").length > 0
       begin
         prd_lint
@@ -222,11 +206,6 @@ platform :ios do
   desc "Set up project, including git hooks"
   lane :setup_project do
     setup_git_hooks
-  end
-
-  desc "Format Objective-C code using clang-format tool"
-  lane :format_objc do |options|
-    apply_codestyle(options)
   end
 
   def check_artifacts_dir
