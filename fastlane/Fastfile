@@ -148,11 +148,17 @@ platform :ios do
     module_name = ENV['REM_MODULE_NAME'] || ENV['REM_FL_TESTS_SLATHER_BASENAME']
 
     if Dir.glob("../*.podspec").length > 0
-      begin
-        prd_lint
-      rescue
-        UI.error '`pod lib lint` found a problem. Please check the logs above'
-        raise
+      bitrise_branch_name = ENV['BITRISE_GIT_BRANCH']
+
+      if bitrise_branch_name == nil || bitrise_branch_name == 'master' || bitrise_branch_name.start_with?('release')
+        begin
+          prd_lint
+        rescue
+          UI.error '`pod lib lint` found a problem. Please check the logs above'
+          raise
+        end
+      else
+        UI.important 'Bitrise is not running on master or release branch. Skipping Pod Lib Lint step'
       end
     else
       UI.important 'No `.podspec` files found. Skipping Pod Lib Lint step'
