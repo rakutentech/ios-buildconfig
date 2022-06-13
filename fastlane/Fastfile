@@ -187,6 +187,7 @@ platform :ios do
       project_name: ENV['REM_FL_TESTS_SLATHER_BASENAME'] || 'Project',
       output_types: 'html, json',
       skip_spm_analysis: true,
+      cli_version: '7.1.0',
       output_directory: 'artifacts'
     )
   end
