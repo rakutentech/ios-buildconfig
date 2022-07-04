@@ -47,9 +47,6 @@ button {
 .version-dropdown-content {
   display: none;
   position: absolute;
-  background-color: $content_bg_color;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
 }
 
 .version-dropdown-content a {
@@ -58,9 +55,17 @@ button {
   text-decoration: none;
   display: block;
   white-space: nowrap;
+  background-color: $content_bg_color;
+  box-shadow: 0px 4px 2px 0px rgba(0,0,0,0.2);
+  z-index: 1;
   width: -webkit-fill-available;
 }
 
 .version-dropdown-content a:hover {background-color: $content_bg_color_hover}
 
-.show {display:block;}
+.show {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 350px;
+}
