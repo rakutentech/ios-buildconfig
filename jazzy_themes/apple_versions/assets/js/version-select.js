@@ -6,12 +6,14 @@ function toggleVersionSelect() {
   const length = Versions.length;
   for (var i = 0; i < length; i++) {
     var link = document.createElement('a');
-    // root or 1-level deep
-    if (/(Classes|Extensions|Protocols|Structs|Enums)[/]/.test(window.location.href)) {
-      link.setAttribute('href',"../../" + Versions[i] + "/index.html");
-    } else {
-      link.setAttribute('href',"../" + Versions[i] + "/index.html");
-    }
+    // navigate to index from relative location
+    var currVer = window.location.href.match(/(\d+\.)?(\d+\.)?(\*|\d+)/)[0];
+    var path = window.location.href.split(currVer + "/")[1];
+    path = path.replace(/#\//, '');
+    var nestLevel = ((path || "").match(/\//g) || []).length;
+    var prefix = "../";
+    for (var j=0; j<nestLevel; j++) { prefix += "../" }
+    link.setAttribute('href', prefix + Versions[i] + "/index.html");
     link.innerText = Versions[i];
     versionsList.appendChild(link);
   }
