@@ -6,7 +6,12 @@ function toggleVersionSelect() {
   const length = Versions.length;
   for (var i = 0; i < length; i++) {
     var link = document.createElement('a');
-    link.setAttribute('href',"../" + Versions[i] + "/index.html");
+    // root or 1-level deep
+    if (/(Classes|Extensions|Protocols|Structs|Enums)[/]/.test(window.location.href)) {
+      link.setAttribute('href',"../../" + Versions[i] + "/index.html");
+    } else {
+      link.setAttribute('href',"../" + Versions[i] + "/index.html");
+    }
     link.innerText = Versions[i];
     versionsList.appendChild(link);
   }
