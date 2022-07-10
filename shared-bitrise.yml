@@ -8,7 +8,6 @@ workflows:
     before_run:
     - _setup
     after_run:
-    - _sonarqube
     - _report
     - _deploy_artifacts
     steps:
@@ -17,6 +16,15 @@ workflows:
         - update_fastlane: 'false'
         - lane: ci
         title: Build & Test
+    - sonarqube-scanner@1:
+        run_if: '{{getenv "SONAR_API_TOKEN" | ne "" | and (enveq "BITRISE_GIT_BRANCH" "master" | or (enveq "IS_RELEASE_BRANCH" "true") )}}'
+        inputs:
+        - scanner_properties: |-
+            sonar.host.url=$SONAR_HOST_URL
+            sonar.login=$SONAR_API_TOKEN
+            sonar.c.file.suffixes=-
+            sonar.cpp.file.suffixes=-
+            sonar.objc.file.suffixes=-
 
   deploy:
     before_run:
@@ -87,12 +95,16 @@ workflows:
         - channel_on_error: ''
         - pretext: ''
         - pretext_on_error: ''
-        - message_on_error: |+
-            $BITRISE_APP_TITLE » $BITRISE_TRIGGERED_WORKFLOW_TITLE - #$BITRISE_BUILD_NUMBER *Failure*
-            <$BITRISE_BUILD_URL|Open>
-        - message: |+
-            $BITRISE_APP_TITLE » $BITRISE_TRIGGERED_WORKFLOW_TITLE - #$BITRISE_BUILD_NUMBER *Success*
-            <$BITRISE_BUILD_URL|Open>
+        - message_on_error: |
+            $BITRISE_APP_TITLE » $BITRISE_GIT_BRANCH (_$BITRISE_TRIGGERED_WORKFLOW_TITLE​_) - #$BITRISE_BUILD_NUMBER $SLACK_PR_INDICATOR
+            ❌ *Failure*
+            [Stack: $STACK_INFO]
+            <$BITRISE_BUILD_URL|Open> $BITRISE_GIT_COMMIT
+        - message: |
+            $BITRISE_APP_TITLE » $BITRISE_GIT_BRANCH (_$BITRISE_TRIGGERED_WORKFLOW_TITLE​_) - #$BITRISE_BUILD_NUMBER $SLACK_PR_INDICATOR
+            ✅ *Back to normal*
+            [Stack: $STACK_INFO]
+            <$BITRISE_BUILD_URL|Open> $BITRISE_GIT_COMMIT
         - fields: ''
         - buttons: ''
         - footer: ''
@@ -108,6 +120,27 @@ workflows:
         inputs:
         - update_submodules: 'no'
     - cache-pull@2: {}
+    - script@1:
+        title: Setup env vars
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -ex
+
+            XCODE_VERSION=`/usr/bin/xcodebuild -version | grep Xcode`
+            envman add --key STACK_INFO --value "$XCODE_VERSION"
+
+            if [[ $BITRISE_GIT_BRANCH == release* ]]; then
+                envman add --key IS_RELEASE_BRANCH --value "true"
+            else
+                envman add --key IS_RELEASE_BRANCH --value "false"
+            fi
+
+            if [ "$PR" = true ]; then
+                envman add --key SLACK_PR_INDICATOR --value ":git:"
+            else
+                envman add --key SLACK_PR_INDICATOR --value ""
+            fi
     - script@1:
         title: Bundle install
         inputs:
@@ -131,29 +164,6 @@ workflows:
     - cocoapods-install@1:
         inputs:
         - verbose: 'false'
-
-  _sonarqube:
-    steps:
-    - script@1:
-        title: Setup env vars
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-
-            if [[ $BITRISE_GIT_BRANCH == release* ]]; then
-                envman add --key IS_RELEASE_BRANCH --value "true"
-            else
-                envman add --key IS_RELEASE_BRANCH --value "false"
-            fi
-    - sonarqube-scanner@1:
-        run_if: '{{getenv "SONAR_API_TOKEN" | ne "" | and (enveq "BITRISE_GIT_BRANCH" "master" | or (enveq "IS_RELEASE_BRANCH" "true") )}}'
-        inputs:
-        - scanner_properties: |-
-            sonar.host.url=$SONAR_HOST_URL
-            sonar.login=$SONAR_API_TOKEN
-            sonar.c.file.suffixes=-
-            sonar.cpp.file.suffixes=-
-            sonar.objc.file.suffixes=-
 
   _report:
     steps:
