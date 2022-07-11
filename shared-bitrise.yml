@@ -102,7 +102,7 @@ workflows:
             <$BITRISE_BUILD_URL|Open> $BITRISE_GIT_COMMIT
         - message: |
             $BITRISE_APP_TITLE » $BITRISE_GIT_BRANCH (_$BITRISE_TRIGGERED_WORKFLOW_TITLE​_) - #$BITRISE_BUILD_NUMBER $SLACK_PR_INDICATOR
-            ✅ *Back to normal*
+            ✅ *Success*
             [Stack: $STACK_INFO]
             <$BITRISE_BUILD_URL|Open> $BITRISE_GIT_COMMIT
         - fields: ''
