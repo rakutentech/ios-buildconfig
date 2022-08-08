@@ -183,10 +183,20 @@ platform :ios do
 
   desc "Run OWASP Dependency Check"
   lane :check_dependencies do |options|
+    # Check Cocoapods
     dependency_check_ios_analyzer(
       project_name: ENV['REM_FL_TESTS_SLATHER_BASENAME'] || 'Project',
       output_types: 'html, json',
       skip_spm_analysis: true,
+      cli_version: '7.1.0',
+      output_directory: 'artifacts'
+    )
+    # Check SPM
+    dependency_check_ios_analyzer(
+      project_path: ENV['REM_FL_SPM_DIR_CONTAINING_XCODEPROJ'] || '.',
+      project_name: ENV['REM_FL_TESTS_SLATHER_BASENAME'] || 'Project',
+      output_types: 'html, json',
+      skip_pods_analysis: true,
       cli_version: '7.1.0',
       output_directory: 'artifacts'
     )
