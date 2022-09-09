@@ -14,18 +14,24 @@ platform :ios do
   lane :shared_tests do |options|
     cocoapods(repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
 
-    scan(
+    scan_args = {
       clean: true,
       skip_build: true,
       output_directory: './artifacts/unit-tests',
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
       device: ENV['REM_FL_TESTS_DEVICE'] || 'iPhone 11',
       code_coverage: true,
-      xcodebuild_formatter: 'xcpretty',
       slack_only_on_failure: true,
       skip_slack: ENV['PREVIOUS_BUILD_STATUS'] == 'error', # var defined in Bitrise step
       output_types: 'html,junit',
-      output_files: 'report.html,report.junit')
+      output_files: 'report.html,report.junit'
+    }
+
+    if Gem::Version.new(Fastlane::VERSION) >= Gem::Version.create('2.201.0')
+      scan_args[:xcodebuild_formatter] = 'xcpretty'
+    end
+
+    scan(scan_args)
 
     slather(
       output_directory: './artifacts/coverage',
