@@ -73,6 +73,7 @@ platform :ios do
         uploadBitcode: false,
         compileBitcode: false,
       },
+      xcargs: ENV['REM_FL_SAMPLE_XCARGS'],
       scheme: ENV['REM_FL_SAMPLE_SCHEME'])
   end
 
