@@ -100,11 +100,10 @@ workflows:
     before_run:
     - _setup
     steps:
-    - xcode-test@2:
+    - xcode-test@4:
         inputs:
-        - simulator_device: iPhone 8
         - scheme: IntegrationTests
-        - should_build_before_test: 'no'
+        - destination: platform=iOS Simulator,name=iPhone 14,OS=latest
     - cache-push@2:
         inputs:
         - cache_paths: |-
