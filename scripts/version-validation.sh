@@ -12,6 +12,6 @@ then
         exit 1;
     fi
 else
-    echo "The version parameter (format: x.y.z) is missing.";
+    echo "version input (format: x.y.z) is missing.";
     exit 1;
 fi
