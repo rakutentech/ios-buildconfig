@@ -6,29 +6,26 @@ module Fastlane
       def self.run(params)
         module_name = params[:module_name]
         module_version = params[:module_version]
+        docgen_script = params[:docgen_script] || ""
 
         UI.message("Generate documentation for #{module_name}-#{module_version}")
-
-        array = module_version.split(/[.]/)
-        short_version = array[0] + "." + array[1]
-
-        doc_dir = module_name + "-" + short_version
-        UI.message("documentation directory name: #{doc_dir}")
 
         workspace = ENV['WORKSPACE'] || "./"
 
         Dir.chdir(workspace) do
-          FileUtils.mkdir_p('artifacts/docs')
-          FileUtils.remove_dir 'artifacts/Documentation', :force => true
-          doc_script = ENV.fetch("REM_FL_DOCS_GENERATION_COMMAND", "red-gendoc")
-          sh(doc_script)
-          FileUtils.mv 'documentation', "artifacts/docs/#{doc_dir}", :force => true
+          if docgen_script.empty?
+            # running default script
+            UI.user_error!("svn not installed") unless system("command -v svn")
+            sh "svn export https://github.com/rakutentech/ios-buildconfig/trunk/jazzy_themes jazzy_themes --force"
+            sh "bundle exec jazzy --output artifacts/docs/#{module_version} --theme jazzy_themes/apple_versions"
+          else
+            sh("#{docgen_script} #{module_name} #{module_version}")
+          end
         end
-
       end
 
       def self.description
-        "Generate documentation for sdk module using red-gendoc script or command defined in REM_FL_DOCS_GENERATION_COMMAND env variable"
+        "Generate documentation for sdk module using custom themed jazzy or shell script passed in `docgen_command` optional parameter"
       end
 
       def self.available_options
@@ -38,6 +35,10 @@ module Fastlane
                                        ),
           FastlaneCore::ConfigItem.new(key: :module_version,
                                        description: "version of the module"
+                                       ),
+          FastlaneCore::ConfigItem.new(key: :docgen_script,
+                                       description: "a custom shell script that generates documentation (optional)",
+                                       optional: true
                                        )
         ]
       end

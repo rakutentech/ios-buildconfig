@@ -10,7 +10,6 @@ module Fastlane
         github_token = params[:github_token]
         ghpages_url = params[:ghpages_url]
 
-        UI.message("Generating documentation")
         # Check necessary input data
         UI.user_error!("Missing `_versions` file") unless File.exists?("_versions")
         UI.user_error!("Missing `.jazzy.yaml` file") unless File.exists?(".jazzy.yaml")
@@ -33,10 +32,11 @@ module Fastlane
         sh "GIT_SSH_COMMAND='#{git_ssh_command}' git clone --single-branch --branch gh-pages #{ghpages_url} #{docs_folder}"
         FileUtils.rm_rf("#{docs_folder}/#{module_version}")
 
-        # Download theme and generate docs
-        UI.user_error!("svn not installed") unless system("command -v svn")
-        sh "svn export https://github.com/rakutentech/ios-buildconfig/trunk/jazzy_themes jazzy_themes --force"
-        sh "bundle exec jazzy --output artifacts/docs/#{module_version} --theme jazzy_themes/apple_versions"
+        # Generate docs
+        UI.message("Generating documentation")
+        Actions::DocumentationAction.run(module_name: module_name, 
+                                         module_version: module_version,
+                                         docgen_script: ENV["REM_FL_DOCS_GENERATION_SCRIPT"])
 
         # Generate html files
         versions_string = File.readlines("_versions").map{|line| "\"#{line.strip}\""}.join(",")
