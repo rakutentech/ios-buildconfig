@@ -214,7 +214,8 @@ platform :ios do
   lane :generate_docs do |options|
     documentation(
       module_name: options[:module_name],
-      module_version: options[:module_version]
+      module_version: options[:module_version],
+      docgen_script: options[:docgen_script]
     )
   end
 
