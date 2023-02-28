@@ -127,7 +127,7 @@ platform :ios do
       # no Gemfile
       sh "pod repo update"
     end
-    pod_lib_lint(sources: ["https://cdn.cocoapods.org", options[:source]], allow_warnings: true, verbose: true)
+    pod_lib_lint(sources: ["https://cdn.cocoapods.org", options[:source], ENV['REM_FL_PODSPEC_LINT_SOURCES']], allow_warnings: true, verbose: true)
   end
 
   desc 'Lint the podspec on STG spec repo'
