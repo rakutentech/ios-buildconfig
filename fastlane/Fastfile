@@ -174,10 +174,12 @@ platform :ios do
 
     if File.exist?('../.swiftlint.yml')
       begin
+        swiftlint_pod_path = 'Pods/SwiftLint/swiftlint'
         swiftlint(
           mode: :lint,
           strict: true,
           config_file: '.swiftlint.yml',
+          executable: File.exist?("../#{swiftlint_pod_path}") ? swiftlint_pod_path : nil,
           ignore_exit_status: false)
       rescue
         UI.error '`swiftlint` found a problem. Please check the logs above'
