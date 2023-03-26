@@ -198,8 +198,9 @@ platform :ios do
       project_name: ENV['REM_FL_TESTS_SLATHER_BASENAME'] || 'Project',
       output_types: 'html, json',
       skip_spm_analysis: true,
-      cli_version: '7.1.0',
-      output_directory: 'artifacts'
+      cli_version: '8.2.1',
+      output_directory: 'artifacts',
+      suppression: ENV['REM_FL_DEP_CHECK_SUPPRESSION']
     )
     # Check SPM
     dependency_check_ios_analyzer(
@@ -207,8 +208,9 @@ platform :ios do
       project_name: ENV['REM_FL_TESTS_SLATHER_BASENAME'] || 'Project',
       output_types: 'html, json',
       skip_pods_analysis: true,
-      cli_version: '7.1.0',
-      output_directory: 'artifacts'
+      cli_version: '8.2.1',
+      output_directory: 'artifacts',
+      suppression: ENV['REM_FL_DEP_CHECK_SUPPRESSION']
     )
   end
 
