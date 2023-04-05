@@ -4,9 +4,7 @@ opt_in_rules:
 
 disabled_rules:
 - nesting
-- identifier_name
 - todo
-- cyclomatic_complexity
 
 excluded:
 - Carthage
@@ -38,7 +36,11 @@ file_length:
     ignore_comment_only_lines: true
 
 cyclomatic_complexity:
-    warning: 15
+    warning: 25
     error: 25
+
+large_tuple:
+    warning: 3
+    error: 3
 
 reporter: "xcode"
