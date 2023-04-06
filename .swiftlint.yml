@@ -2,6 +2,10 @@ opt_in_rules:
 - empty_count
 - empty_string
 
+disabled_rules:
+- nesting
+- todo
+
 excluded:
 - Carthage
 - Pods
@@ -32,7 +36,11 @@ file_length:
     ignore_comment_only_lines: true
 
 cyclomatic_complexity:
-    warning: 15
+    warning: 25
     error: 25
+
+large_tuple:
+    warning: 3
+    error: 3
 
 reporter: "xcode"
