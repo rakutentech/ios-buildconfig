@@ -14,6 +14,8 @@ platform :ios do
   lane :shared_tests do |options|
     cocoapods(repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
 
+    lint_module
+
     scan_args = {
       clean: true,
       skip_build: true,
@@ -43,7 +45,6 @@ platform :ios do
       binary_basename: ENV['REM_FL_TESTS_SLATHER_BASENAME'],
       ignore: '*.{h,m}')
 
-    lint_module
     begin
       check_dependencies
     rescue
@@ -178,7 +179,6 @@ platform :ios do
         swiftlint(
           mode: :lint,
           strict: true,
-          config_file: '.swiftlint.yml',
           executable: File.exist?("../#{swiftlint_pod_path}") ? swiftlint_pod_path : nil,
           ignore_exit_status: false)
       rescue
