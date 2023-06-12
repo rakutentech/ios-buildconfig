@@ -114,7 +114,8 @@ platform :ios do
       end
     end
 
-    puts "generate documenation for #{module_name} version #{release_tag}"
+    puts "generate documentation for #{module_name} version #{release_tag}"
+    cocoapods()
     documentation(
       module_name: module_name,
       module_version: release_tag
