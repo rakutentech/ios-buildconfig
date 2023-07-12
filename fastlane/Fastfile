@@ -12,7 +12,9 @@ platform :ios do
 
   desc "Run unit tests"
   lane :shared_tests do |options|
-    cocoapods(repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+    if File.exist?('../Podfile')
+      cocoapods(repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+    end
 
     lint_module
 
@@ -60,8 +62,10 @@ platform :ios do
     increment_version_number(version_number: lane_context[SharedValues::R_VERSION_FROM_DATE], xcodeproj: ENV['REM_FL_SAMPLE_PROJECT'])
 
     # Install pods
-    cocoapods(podfile: ENV['REM_FL_SAMPLE_PODFILE'] || 'Samples/Podfile', repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
-
+    if File.exist?('../Podfile')
+      cocoapods(podfile: ENV['REM_FL_SAMPLE_PODFILE'] || 'Samples/Podfile', repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+    end
+    
     # Build sample
     gym(
       configuration: "Release",
@@ -115,7 +119,9 @@ platform :ios do
     end
 
     puts "generate documentation for #{module_name} version #{release_tag}"
-    cocoapods()
+    if File.exist?('../Podfile')
+      cocoapods(repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+    end
     documentation(
       module_name: module_name,
       module_version: release_tag
