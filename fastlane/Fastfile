@@ -62,8 +62,9 @@ platform :ios do
     increment_version_number(version_number: lane_context[SharedValues::R_VERSION_FROM_DATE], xcodeproj: ENV['REM_FL_SAMPLE_PROJECT'])
 
     # Install pods
-    if File.exist?('../Podfile')
-      cocoapods(podfile: ENV['REM_FL_SAMPLE_PODFILE'] || 'Samples/Podfile', repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
+    podfile_path = ENV['REM_FL_SAMPLE_PODFILE'] || 'Samples/Podfile'
+    if File.exist?("../#{podfile_path}")
+      cocoapods(podfile: podfile_path, repo_update: ENV['REM_FL_CP_REPO_UPDATE'] || false)
     end
     
     # Build sample
