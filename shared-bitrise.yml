@@ -64,7 +64,7 @@ workflows:
             #!/usr/bin/env bash
             set -ex
 
-            bundle exec pod spec lint --allow-warnings
+            bundle exec pod spec lint --allow-warnings --verbose
             bundle exec pod trunk push --allow-warnings --verbose
 
   deploy_docs:
