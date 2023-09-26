@@ -93,7 +93,11 @@ platform :ios do
   desc 'Module Pre-Release checks'
   lane :release do |options|
 
-    release_tag = version_get_podspec(path: ENV['REM_FL_PODSPEC_FILE'])
+    if File.exist?('../Podfile')
+      release_tag = version_get_podspec(path: ENV['REM_FL_PODSPEC_FILE'])
+    else
+      release_tag = options[:module]
+    end
     module_name = options[:module]
     release_branch = options[:branch]
 
