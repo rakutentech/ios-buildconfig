@@ -134,13 +134,17 @@ platform :ios do
   end
 
   lane :lint_podspec do |options|
-    begin
-      sh "bundle exec pod repo update"
-    rescue
-      # no Gemfile
-      sh "pod repo update"
+    if Dir.glob("../*.podspec").length > 0
+      begin
+        sh "bundle exec pod repo update"
+      rescue
+        # no Gemfile
+        sh "pod repo update"
+      end
+      pod_lib_lint(sources: ["https://cdn.cocoapods.org", options[:source], ENV['REM_FL_PODSPEC_LINT_SOURCES']], allow_warnings: true, verbose: true)
+    else
+      UI.important 'No `.podspec` files found. Skipping Pod Lib Lint step'
     end
-    pod_lib_lint(sources: ["https://cdn.cocoapods.org", options[:source], ENV['REM_FL_PODSPEC_LINT_SOURCES']], allow_warnings: true, verbose: true)
   end
 
   desc 'Lint the podspec on STG spec repo'
