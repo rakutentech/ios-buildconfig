@@ -15,8 +15,9 @@ module Fastlane
         Dir.chdir(workspace) do
           if docgen_script.empty?
             # running default script
-            UI.user_error!("svn not installed") unless system("command -v svn")
-            sh "svn export https://github.com/rakutentech/ios-buildconfig/trunk/jazzy_themes jazzy_themes --force"
+            sh "git clone https://github.com/rakutentech/ios-buildconfig"
+            sh "mv ios-buildconfig/jazzy_themes ."
+            sh "rm -rf ios-buildconfig"
             sh "bundle exec jazzy --output artifacts/docs/#{module_version} --theme jazzy_themes/apple_versions"
           else
             sh("#{docgen_script} #{module_name} #{module_version}")
