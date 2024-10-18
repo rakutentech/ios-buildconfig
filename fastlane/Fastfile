@@ -31,6 +31,14 @@ platform :ios do
       output_files: 'report.html,report.junit'
     }
 
+    workspace_path = ENV['REM_FL_TESTS_WORKSPACE']
+    project_path = ENV['REM_FL_TESTS_PROJECT']
+
+    # Check if workspace exists, otherwise use project
+    if !workspace_path
+      scan_args[:project] = ENV['REM_FL_TESTS_PROJECT']
+    end
+
     if Gem::Version.new(Fastlane::VERSION) >= Gem::Version.create('2.201.0')
       scan_args[:xcodebuild_formatter] = 'xcpretty'
     end
@@ -42,8 +50,8 @@ platform :ios do
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
       sonarqube_xml: true,
       use_bundle_exec: true,
-      proj: ENV['REM_FL_TESTS_PROJECT'],
-      workspace: ENV['REM_FL_TESTS_WORKSPACE'],
+      proj: project_path,
+      workspace: workspace_path,
       binary_basename: ENV['REM_FL_TESTS_SLATHER_BASENAME'],
       ignore: '*.{h,m}')
 
