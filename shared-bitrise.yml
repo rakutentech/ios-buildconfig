@@ -171,17 +171,17 @@ workflows:
         - content: |-
             #!/usr/bin/env bash
             set -ex
+
+            rbenv local 3.2.4
+            RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
+            echo "Gem cache directory: $RBENV_DIR"
+            envman add --key GEM_CACHE_PATH --value $RBENV_DIR
+            
             if [ ! -f "Gemfile" ]; then
                 echo "No Gemfile detected. Skipping..."
                 exit 0
             fi
-            
-            rbenv local 3.2.4
-            bundle install
-
-            RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
-            echo "Gem cache directory: $RBENV_DIR"
-            envman add --key GEM_CACHE_PATH --value $RBENV_DIR
+            bundle install    
     - brew-install@0:
         title: Install swiftlint
         inputs:
