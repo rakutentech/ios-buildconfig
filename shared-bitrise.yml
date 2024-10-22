@@ -180,7 +180,6 @@ workflows:
 
             # Install the most compatible version (latest stable)
             echo "Installing Ruby version: $stable_version"
-            rbenv install "$stable_version"
             rbenv local "$stable_version"
 
             # Verify installation
