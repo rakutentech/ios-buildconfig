@@ -23,7 +23,7 @@ platform :ios do
       skip_build: true,
       output_directory: './artifacts/unit-tests',
       scheme: ENV['REM_FL_TESTS_SCHEME'] || 'Tests',
-      device: ENV['REM_FL_TESTS_DEVICE'] || 'iPhone 11',
+      device: ENV['REM_FL_TESTS_DEVICE'] || 'iPhone 14',
       code_coverage: true,
       slack_only_on_failure: true,
       skip_slack: ENV['PREVIOUS_BUILD_STATUS'] == 'error', # var defined in Bitrise step
