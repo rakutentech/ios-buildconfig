@@ -172,7 +172,7 @@ workflows:
             #!/usr/bin/env bash
             set -ex
 
-            rbenv local 3.4.1
+            rbenv local 3.3.7
             
             # Verify installation
             ruby -v
