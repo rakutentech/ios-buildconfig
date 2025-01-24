@@ -172,19 +172,24 @@ workflows:
             #!/usr/bin/env bash
             set -ex
 
-            rbenv local 3.3.7
-            
-            # Verify installation
-            ruby -v
-            RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
-            echo "Gem cache directory: $RBENV_DIR"
-            envman add --key GEM_CACHE_PATH --value $RBENV_DIR
-            
-            if [ ! -f "Gemfile" ]; then
-                echo "No Gemfile detected. Skipping..."
-                exit 0
-            fi
-            bundle install    
+        # Install and use the latest stable Ruby version
+        latest_ruby=$(rbenv install -l | grep -v - | tail -1)
+        rbenv install --skip-existing "$latest_ruby"
+        rbenv global "$latest_ruby"
+
+        # Verify installation
+        ruby -v
+        RBENV_DIR="$(cd "$(rbenv which ruby)/../.." && pwd)"
+        echo "Gem cache directory: $RBENV_DIR"
+        envman add --key GEM_CACHE_PATH --value "$RBENV_DIR"
+        
+        # Check for Gemfile and install dependencies
+        if [ ! -f "Gemfile" ]; then
+            echo "No Gemfile detected. Skipping..."
+            exit 0
+        fi
+
+bundle install
     - brew-install@0:
         title: Install swiftlint
         inputs:
