@@ -169,24 +169,27 @@ workflows:
         title: Bundle install
         inputs:
         - content: |-
-           #!/usr/bin/env bash
-      set -ex
-      
-      if [ ! -f "Gemfile" ]; then
-          echo "No Gemfile detected. Skipping..."
-          exit 0
-      fi
-      
-      rbenv local 3.3.5
-      
-      gem install bundler -v "~> 2.4" # Adjust version if necessary
-      bundle config set --local path 'vendor/bundle'
-
-      bundle install
-    
-      RBENV_DIR="$(cd "$(rbenv which ruby)/../.." && pwd)"
-      echo "Gem cache directory: $RBENV_DIR"
-      envman add --key GEM_CACHE_PATH --value "$RBENV_DIR"
+          #!/usr/bin/env bash
+            set -ex
+            rbenv local 3.0.0
+            # List all available Ruby versions
+            available_versions=$(rbenv install -l)
+            # Filter for the most stable Ruby version (non-prerelease)
+            stable_version=$(echo "$available_versions" | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
+            # Install the most compatible version (latest stable)
+            echo "Installing Ruby version: $stable_version"
+            rbenv local "$stable_version"
+            # Verify installation
+            ruby -v
+            RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
+            echo "Gem cache directory: $RBENV_DIR"
+            envman add --key GEM_CACHE_PATH --value $RBENV_DIR
+            
+            if [ ! -f "Gemfile" ]; then
+                echo "No Gemfile detected. Skipping..."
+                exit 0
+            fi
+            bundle install
     - brew-install@0:
         title: Install swiftlint
         inputs:
