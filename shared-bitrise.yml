@@ -169,45 +169,29 @@ workflows:
         title: Bundle install
         inputs:
         - content: |-
-            #!/usr/bin/env bash
-        set -ex
-        
-        # Check if Gemfile exists
-        if [ ! -f "Gemfile" ]; then
-            echo "No Gemfile detected. Skipping..."
-            exit 0
-        fi
-        
-        # Ensure rbenv is properly initialized
-        if ! command -v rbenv &> /dev/null; then
-            echo "rbenv is not installed. Please install rbenv and try again."
-            exit 1
-        fi
-        
-        # Install Ruby 3.2.2 if not already installed
-        RUBY_VERSION="3.2.2"
-        if ! rbenv versions --bare | grep -q "^${RUBY_VERSION}$"; then
-            echo "Ruby ${RUBY_VERSION} is not installed. Installing..."
-            rbenv install "${RUBY_VERSION}" --skip-existing
-        fi
-        
-        # Set the local Ruby version
-        rbenv local "${RUBY_VERSION}"
-        ruby -v
-        
-        # Install Bundler if not already installed
-        if ! gem list -i bundler; then
-            echo "Installing Bundler..."
-            gem install bundler
-        fi
-        
-        # Run bundle install
-        bundle install
-        
-        # Cache the Ruby gem directory
-        RBENV_DIR="$(cd "$(rbenv which ruby)/../.." && pwd)"
-        echo "Gem cache directory: $RBENV_DIR"
-        envman add --key GEM_CACHE_PATH --value "$RBENV_DIR"
+           #!/usr/bin/env bash
+      set -ex
+      
+      # Check for Gemfile presence
+      if [ ! -f "Gemfile" ]; then
+          echo "No Gemfile detected. Skipping..."
+          exit 0
+      fi
+      
+      # Set Ruby version
+      rbenv local 3.3.5
+      
+      # Update Bundler and ensure compatibility
+      gem install bundler -v "~> 2.4" # Adjust version if necessary
+      bundle config set --local path 'vendor/bundle'
+      
+      # Install dependencies
+      bundle install
+      
+      # Cache gems path
+      RBENV_DIR="$(cd "$(rbenv which ruby)/../.." && pwd)"
+      echo "Gem cache directory: $RBENV_DIR"
+      envman add --key GEM_CACHE_PATH --value "$RBENV_DIR"
     - brew-install@0:
         title: Install swiftlint
         inputs:
