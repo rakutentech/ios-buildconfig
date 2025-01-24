@@ -172,23 +172,18 @@ workflows:
            #!/usr/bin/env bash
       set -ex
       
-      # Check for Gemfile presence
       if [ ! -f "Gemfile" ]; then
           echo "No Gemfile detected. Skipping..."
           exit 0
       fi
       
-      # Set Ruby version
       rbenv local 3.3.5
       
-      # Update Bundler and ensure compatibility
       gem install bundler -v "~> 2.4" # Adjust version if necessary
       bundle config set --local path 'vendor/bundle'
-      
-      # Install dependencies
+
       bundle install
-      
-      # Cache gems path
+    
       RBENV_DIR="$(cd "$(rbenv which ruby)/../.." && pwd)"
       echo "Gem cache directory: $RBENV_DIR"
       envman add --key GEM_CACHE_PATH --value "$RBENV_DIR"
