@@ -169,16 +169,19 @@ workflows:
         title: Bundle install
         inputs:
         - content: |-
-          #!/usr/bin/env bash
+            #!/usr/bin/env bash
             set -ex
-            rbenv local 3.0.0
+
             # List all available Ruby versions
             available_versions=$(rbenv install -l)
+
             # Filter for the most stable Ruby version (non-prerelease)
             stable_version=$(echo "$available_versions" | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
+
             # Install the most compatible version (latest stable)
             echo "Installing Ruby version: $stable_version"
             rbenv local "$stable_version"
+
             # Verify installation
             ruby -v
             RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
@@ -189,7 +192,7 @@ workflows:
                 echo "No Gemfile detected. Skipping..."
                 exit 0
             fi
-            bundle install
+            bundle install    
     - brew-install@0:
         title: Install swiftlint
         inputs:
