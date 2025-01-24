@@ -172,16 +172,8 @@ workflows:
             #!/usr/bin/env bash
             set -ex
 
-            # List all available Ruby versions
-            available_versions=$(rbenv install -l)
-
-            # Filter for the most stable Ruby version (non-prerelease)
-            stable_version=$(echo "$available_versions" | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
-
-            # Install the most compatible version (latest stable)
-            echo "Installing Ruby version: $stable_version"
-            rbenv local "$stable_version"
-
+            rbenv local 3.2.2
+            
             # Verify installation
             ruby -v
             RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
