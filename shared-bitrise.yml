@@ -143,7 +143,6 @@ workflows:
     - git-clone@6:
         inputs:
         - update_submodules: 'no'
-    - cache-pull@2: {}
     - script@1:
         title: Setup env vars
         inputs:
