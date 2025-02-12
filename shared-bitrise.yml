@@ -104,11 +104,6 @@ workflows:
         inputs:
         - scheme: IntegrationTests
         - destination: platform=iOS Simulator,name=iPhone 14,OS=latest
-    - cache-push@2:
-        inputs:
-        - cache_paths: |-
-            $BITRISE_CACHE_DIR
-            $GEM_CACHE_PATH
     - slack@3:
         inputs:
         - channel: ''
@@ -142,7 +137,7 @@ workflows:
     steps:
     - git-clone@6:
         inputs:
-        - update_submodules: 'no'
+        - update_submodules: 'yes'
     - script:
         title: Clean DerivedData
         inputs:
