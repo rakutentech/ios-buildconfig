@@ -144,6 +144,13 @@ workflows:
         inputs:
         - update_submodules: 'no'
     - cache-pull@2: {}
+    - script:
+        title: Clean DerivedData
+        inputs:
+          - content: |
+              #!/bin/bash
+              set -ex
+              rm -rf ~/Library/Developer/Xcode/DerivedData
     - script@1:
         title: Setup env vars
         inputs:
