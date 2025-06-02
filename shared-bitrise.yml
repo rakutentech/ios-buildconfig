@@ -24,21 +24,15 @@ workflows:
             #!/usr/bin/env bash
             set -ex
 
-            # Source: https://devcenter.bitrise.io/testing/exporting-to-test-reports-from-custom-script-steps/
-
             JUNIT=./artifacts/unit-tests/report.junit
             if [ ! -f "$JUNIT" ]; then
                 echo "No JUnit file to export"
                 exit 0
             fi
-            # Creating the sub-directory for the test run within the BITRISE_TEST_RESULT_DIR:
+
             test_run_dir="$BITRISE_TEST_RESULT_DIR/result_dir_1"
             mkdir "$test_run_dir"
-
-            # Exporting the JUnit XML test report:
             cp "$JUNIT" "$test_run_dir/UnitTest.xml"
-
-            # Creating the test-info.json file with the name of the test run defined:
             echo '{"test-name":"Tests scheme run"}' >> "$test_run_dir/test-info.json"
     - sonarqube-scanner@1:
         run_if: '{{getenv "SONAR_API_TOKEN" | ne "" | and (enveq "BITRISE_GIT_BRANCH" "master" | or (enveq "IS_RELEASE_BRANCH" "true") )}}'
@@ -104,11 +98,12 @@ workflows:
         inputs:
         - scheme: IntegrationTests
         - destination: platform=iOS Simulator,name=iPhone 14,OS=latest
-    # - cache-push@2:
-    #    inputs:
-    #    - cache_paths: |-
-    #        $BITRISE_CACHE_DIR
-    #        $GEM_CACHE_PATH
+    - save-cache@1:
+        inputs:
+        - cache_paths: |-
+            $BITRISE_CACHE_DIR
+            $GEM_CACHE_PATH
+        - cache_key: ios-cache-{{ .Branch }}-{{ checksum "Podfile.lock" }}
     - slack@3:
         inputs:
         - channel: ''
@@ -137,13 +132,16 @@ workflows:
         - icon_url_on_error: ''
         - from_username_on_error: ''
         - color_on_error: "#d10b20"
-        
+
   _setup:
     steps:
     - git-clone@6:
         inputs:
         - update_submodules: 'no'
-    - cache-pull@2: {}
+    - restore-cache@1:
+        inputs:
+        - cache_keys: |
+            ios-cache-{{ .Branch }}-{{ checksum "Podfile.lock" }}
     - script@1:
         title: Setup env vars
         inputs:
@@ -172,17 +170,11 @@ workflows:
             #!/usr/bin/env bash
             set -ex
 
-            # List all available Ruby versions
             available_versions=$(rbenv install -l)
-
-            # Filter for the most stable Ruby version (non-prerelease)
             stable_version=$(echo "$available_versions" | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
-
-            # Install the most compatible version (latest stable)
             echo "Installing Ruby version: $stable_version"
             rbenv local "$stable_version"
 
-            # Verify installation
             ruby -v
             RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
             echo "Gem cache directory: $RBENV_DIR"
@@ -208,8 +200,9 @@ workflows:
     - danger@2:
         inputs:
         - github_api_token: "$DANGER_GITHUB_API_TOKEN"
-   # - cache-push@2:
-   #     inputs:
-   #     - cache_paths: |-
-   #         $BITRISE_CACHE_DIR
-   #         $GEM_CACHE_PATH
+    - save-cache@1:
+        inputs:
+        - cache_paths: |-
+            $BITRISE_CACHE_DIR
+            $GEM_CACHE_PATH
+        - cache_key: ios-cache-{{ .Branch }}-{{ checksum "Podfile.lock" }}
