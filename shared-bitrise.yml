@@ -104,11 +104,11 @@ workflows:
         inputs:
         - scheme: IntegrationTests
         - destination: platform=iOS Simulator,name=iPhone 14,OS=latest
-    - cache-push@2:
-        inputs:
-        - cache_paths: |-
-            $BITRISE_CACHE_DIR
-            $GEM_CACHE_PATH
+    # - cache-push@2:
+    #    inputs:
+    #    - cache_paths: |-
+    #        $BITRISE_CACHE_DIR
+    #        $GEM_CACHE_PATH
     - slack@3:
         inputs:
         - channel: ''
@@ -208,8 +208,8 @@ workflows:
     - danger@2:
         inputs:
         - github_api_token: "$DANGER_GITHUB_API_TOKEN"
-    - cache-push@2:
-        inputs:
-        - cache_paths: |-
-            $BITRISE_CACHE_DIR
-            $GEM_CACHE_PATH
+   # - cache-push@2:
+   #     inputs:
+   #     - cache_paths: |-
+   #         $BITRISE_CACHE_DIR
+   #         $GEM_CACHE_PATH
