@@ -11,8 +11,8 @@ module Fastlane
         ghpages_url = params[:ghpages_url]
 
         # Check necessary input data
-        UI.user_error!("Missing `_versions` file") unless File.exists?("_versions")
-        UI.user_error!("Missing `.jazzy.yaml` file") unless File.exists?(".jazzy.yaml")
+        UI.user_error!("Missing `_versions` file") unless File.exist?("_versions")
+        UI.user_error!("Missing `.jazzy.yaml` file") unless File.exist?(".jazzy.yaml")
         module_version = YAML.load(File.read(".jazzy.yaml"))["module_version"]
         UI.user_error!("Missing `module_version` parameter in .jazzy.yaml file") unless module_version != nil
         module_name = YAML.load(File.read(".jazzy.yaml"))["module"]
